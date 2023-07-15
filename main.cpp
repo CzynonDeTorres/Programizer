@@ -206,6 +206,17 @@ void view_td(){
 
 }
 
+bool search_todo(struct todo* head, int id){
+    if (head == NULL) return false;
+    if (head->id == id) {
+        head->status = true;
+        return true;
+    }
+
+    return search_todo(head->next, id);
+
+}
+
 void show_categories(queue<string> q) {
     while (!q.empty()) {
         cout << q.front() << endl;
@@ -427,7 +438,14 @@ void add_td(){
 
 void complete_td(){
     system("cls");
-
+    view_td();
+    
+    bool loop = true;
+    int id;
+    
+    cout << "What has been done? ";
+    cin >> id;
+    search_todo(todohead, id);
 
 }
 
@@ -518,18 +536,19 @@ void login(){
             cout << "User isn't in database, please try again.";
             system("pause");
             system("cls");
-            break;
         }
-        cout << "Enter password: ";
-        cin >> password_input;
-        if (password_input != current_pass){
-            cout << "Password is incorrect, please try again.";
-            system("pause");
-            system("cls");
-            break;
+        else{
+            cout << "Enter password: ";
+            cin >> password_input;
+            if (password_input != current_pass){
+                cout << "Password is incorrect, please try again.";
+                system("pause");
+                system("cls");
+                break;
+            }
+            loop = false;
+            options();
         }
-        loop = false;
-        options();
     } while (loop);
 }
 

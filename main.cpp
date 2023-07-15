@@ -5,11 +5,15 @@
 #include <stdio.h> // scanf
 #include <algorithm> // find
 #include <queue> // queue
+#include <iomanip> // setw
 
 using namespace std;
 
 string current_user, current_pass;
 int current_user_id;
+
+// widths
+int id_width = 6, todo_width = 4, date_width = 9, time_width = 9, status_width = 12, prio_width = 12, categ_width = 12;
 
 // nodes
 struct user{
@@ -21,7 +25,7 @@ struct user{
 };
 
 struct todo{
-    int userid;
+    int id;
     string name;
     string date_dl;
     string time_dl; // current available time method is a bit confusing so we just have to suffer
@@ -41,20 +45,14 @@ todo *todohead = NULL;
 void add_user(string user_input, string pass_input){
     struct user *new_node = new user;
 
-    if(userhead==NULL){
-        new_node->id = 0;
-        new_node->name = user_input;
-        new_node->pass = pass_input;
-        new_node->next = userhead;
-        userhead = new_node;
-    }
-    else{
-        new_node->id = userhead->id + 1;
-        new_node->name = user_input;
-        new_node->pass = pass_input;
-        new_node->next = userhead;
-        userhead = new_node;
-    }
+    if(userhead==NULL) new_node->id = 0;
+    else new_node->id = userhead->id + 1;
+    new_node->name = user_input;
+    new_node->pass = pass_input;
+    new_node->next = userhead;
+    userhead = new_node;
+
+    current_user_id = userhead->id;
 
     ofstream user_file("database/users.txt", ios::app);
     user_file << userhead->id << "," << user_input << "," << pass_input << endl;
@@ -110,6 +108,71 @@ bool search_user(struct user* head, string name){
 
 }
 
+void insert_todo(int n, string name, string date, string time, int prio, bool status, string categ){
+    struct todo *new_node = new todo;
+    new_node->id = n;
+    new_node->name = name;
+    new_node->date_dl = date;
+    new_node->time_dl = time;
+    new_node->priority = prio;
+    new_node->status = status;
+    new_node->category = categ;
+    new_node->next = todohead;
+    todohead = new_node;
+}
+
+void fix_td_width(){
+    todo* temp = todohead;
+
+    if (temp == nullptr) return;
+    while (temp != nullptr){
+        if (temp->name.length() + 4 > todo_width) todo_width = temp->name.length() + 4;
+        if (temp->category.length() + 4 > categ_width) categ_width = temp->category.length() + 4;
+        temp = temp->next;
+    }
+    
+}
+
+void initialize_td(){
+    ifstream user_file;
+    string line, deets, name, date, time, categ;
+    int id, prio;
+    bool status;
+    string filename = "database/lists/" + to_string(current_user_id) +".txt";
+    user_file.open(filename);
+    if (user_file.is_open()){
+        while (getline(user_file, line)){
+            stringstream refline(line);
+            int i=0;
+            while(getline(refline, deets, ',')){
+                if(i==0)
+                    id = stoi(deets);
+                else if(i==1)
+                    name = deets;
+                else if(i==2)
+                    date = deets;
+                else if(i==3)
+                    time = deets;
+                else if(i==4)
+                    prio = stoi(deets);
+                else if(i==5){
+                    if (deets == "0") status = false;
+                    if (deets == "1") status = true;
+                }
+                else if(i==6)
+                    categ = deets;
+                i++;
+            }
+            insert_todo(id,name,date,time,prio,status,categ);
+        }
+    }
+    else ofstream user_file("database/users.txt");
+
+    user_file.close();
+    fix_td_width();
+
+}
+
 void view_td(){
     todo* temp = todohead;
 
@@ -117,15 +180,26 @@ void view_td(){
         cout << "List is empty." << endl;
         return;
     }
+    
+    cout << left << setw(id_width) << "ID"
+         << left << setw(todo_width) << "Name"
+         << left << setw(date_width) << "Deadline:"
+         << left << setw(time_width) << ""
+         << left << setw(prio_width) << "Priority"
+         << left << setw(status_width) << "Status"
+         << left << setw(categ_width) << "Category" << endl;
 
-    cout << "List: ";
     while (temp != nullptr) {
-        cout << temp->name << " "
-             << temp->date_dl << " "
-             << temp->time_dl << " "
-             << temp->status << " "
-             << temp->priority << " "
-             << temp->category << " ";
+        string status;
+        if (temp->status == false) status = "Not done";
+        if (temp->status == true) status = "Done";
+        cout << left << setw(id_width) << temp->id
+             << left << setw(todo_width) << temp->name
+             << left << setw(date_width) << temp->date_dl
+             << left << setw(time_width) << temp->time_dl
+             << left << setw(prio_width) << temp->priority
+             << left << setw(status_width) << status
+             << left << setw(categ_width) << temp->category << endl;
         temp = temp->next;
     }
     cout << endl;
@@ -318,9 +392,9 @@ auto get_deadline(){
 void add_td(){
     string name;
     system("cls");
-    // [date],[time],[prio],[done or not done],[category],[name]
+    // [name],[date],[time],[prio],[done or not done],[category]
     cout << "What are you planning on doing? ";
-    getline(cin, name);
+    getline(cin >> ws,name);
 
     auto [date, time] = get_deadline();
     int taskPriority = priorityLevel();
@@ -329,7 +403,8 @@ void add_td(){
     struct todo *new_node = new todo;
     string filename = "database/lists/" + to_string(current_user_id) + ".txt";
 
-    new_node->userid = current_user_id;
+    if(todohead==NULL) new_node->id = 0;
+    else new_node->id = todohead->id + 1;
     new_node->name = name;
     new_node->date_dl = date;
     new_node->time_dl = time;
@@ -339,7 +414,8 @@ void add_td(){
     todohead = new_node;
 
     ofstream user_file(filename, ios::app);
-    user_file << todohead->name << ","
+    user_file << todohead->id << ","
+              << todohead->name << ","
               << todohead->date_dl << ","
               << todohead->time_dl << ","
               << todohead->priority << ","
@@ -367,8 +443,9 @@ void delete_td(){
 
 void options(){
     system("cls");
-    int choice;
+    char choice;
 
+    initialize_td();
     view_td();
 
     cout << "What do you want to-do?" << endl
@@ -376,20 +453,26 @@ void options(){
          << "[2] Complete a to-do." << endl
          << "[3] Edit a to-do." << endl
          << "[4] Delete a to-do." << endl
+         << "[5] Exit." << endl
          << "Choice: ";
 
+    cin >> choice;
+
     switch (choice){
-        case 1:
+        case '1':
             add_td();
             break;
-        case 2:
+        case '2':
             complete_td();
             break;
-        case 3:
+        case '3':
             edit_td();
             break;
-        case 4:
+        case '4':
             delete_td();
+            break;
+        case '5':
+            // exit();
             break;
         default:
             options();
@@ -417,6 +500,7 @@ void regis(){ // register is a keyword ?
             cin >> password_input;
             add_user(username_input, password_input);
             loop = false;
+            options();
         }
 
     } while(loop);
@@ -445,12 +529,17 @@ void login(){
             break;
         }
         loop = false;
+        options();
     } while (loop);
+}
+
+void guestmode(){
+    current_user_id = -1;
 }
 
 void enter(){
     system("cls");
-    int option;
+    char option;
 
     cout << "Welcome to XXX" << endl << endl;
     cout << "[0] Enter as a guest." << endl
@@ -460,18 +549,18 @@ void enter(){
     cin >> option;
 
     switch (option){
-        case 0:
-            // guestmode();
+        case '0':
+            guestmode();
             break;
-        case 1:
+        case '1':
             system("cls");
             login();
             break;
-        case 2:
+        case '2':
             system("cls");
             regis();
             break;
-        case 3:
+        default:
             cout << "Entered option isn't listed. Please try again. " << endl;
             system("pause");
             system("cls");
@@ -483,17 +572,16 @@ void enter(){
 }
 
 int main(){
-    add_td();
-    // open_user_list();
-    // enter();
+    open_user_list();
+    enter();
     // [X] register and login
-    // [ ] guest mode
-    // [ ] display
+    // [X] guest mode
+    // [X] display
         // [ ] - unsorted (default)
         // [ ] - by date
         // [ ] - by priority
         // [ ] - by category
-            // [ ] add to-do
+            // [X] add to-do
             // [ ] complete to-do
             // [ ] edit to-do
             // [ ] delete to-do

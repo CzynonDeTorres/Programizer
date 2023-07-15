@@ -1,2 +1,5 @@
 .vscode
 main.exe
+database/users.txt
+database/lists/0.txt
+database/lists/1.txt

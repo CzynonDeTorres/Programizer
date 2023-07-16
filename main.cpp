@@ -169,12 +169,13 @@ void initialize_td(){
     else ofstream user_file("database/users.txt");
 
     user_file.close();
-    fix_td_width();
 
 }
 
 void view_td(){
-    todo* temp = todohead;
+    fix_td_width();
+    todo* temp = new todo;
+    temp = todohead;
 
     if (temp == nullptr) {
         cout << "List is empty." << endl;
@@ -206,15 +207,14 @@ void view_td(){
 
 }
 
-bool search_todo(struct todo* head, int id){
-    if (head == NULL) return false;
-    if (head->id == id) {
-        head->status = true;
-        return true;
+void complete_todo(struct todo* head, int id){
+    while(head!=NULL){
+        if (head->id == id){
+            head->status = true;
+            cout << "if";
+        }
+        head = head->next;
     }
-
-    return search_todo(head->next, id);
-
 }
 
 void show_categories(queue<string> q) {
@@ -433,7 +433,6 @@ void add_td(){
               << todohead->status << ","
               << todohead->category << endl;
     user_file.close();
-
 }
 
 void complete_td(){
@@ -445,7 +444,7 @@ void complete_td(){
     
     cout << "What has been done? ";
     cin >> id;
-    search_todo(todohead, id);
+    complete_todo(todohead, id);
 
 }
 
@@ -462,32 +461,34 @@ void delete_td(){
 void options(){
     system("cls");
     char choice;
-
-    initialize_td();
     view_td();
 
     cout << "What do you want to-do?" << endl
-         << "[1] Add a to-do." << endl
-         << "[2] Complete a to-do." << endl
-         << "[3] Edit a to-do." << endl
-         << "[4] Delete a to-do." << endl
-         << "[5] Exit." << endl
-         << "Choice: ";
+        << "[1] Add a to-do." << endl
+        << "[2] Complete a to-do." << endl
+        << "[3] Edit a to-do." << endl
+        << "[4] Delete a to-do." << endl
+        << "[5] Exit." << endl
+        << "Choice: ";
 
     cin >> choice;
 
     switch (choice){
         case '1':
             add_td();
+            options();
             break;
         case '2':
             complete_td();
+            options();
             break;
         case '3':
             edit_td();
+            options();
             break;
         case '4':
             delete_td();
+            options();
             break;
         case '5':
             // exit();
@@ -496,6 +497,7 @@ void options(){
             options();
             break;
     }
+    
 }
 
 void regis(){ // register is a keyword ?
@@ -518,6 +520,7 @@ void regis(){ // register is a keyword ?
             cin >> password_input;
             add_user(username_input, password_input);
             loop = false;
+            initialize_td();
             options();
         }
 
@@ -547,6 +550,8 @@ void login(){
                 break;
             }
             loop = false;
+        
+            initialize_td();
             options();
         }
     } while (loop);
@@ -554,6 +559,9 @@ void login(){
 
 void guestmode(){
     current_user_id = -1;
+        
+    initialize_td();
+    options();
 }
 
 void enter(){

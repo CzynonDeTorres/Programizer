@@ -303,28 +303,15 @@ int priorityLevel()
             system("cls");
             cout << "Invalid Input";
         }
-
         else
         {
             task_loop = false;
-            switch (priorityTask)
-            {
-            case 1:
-                return 1; // feel free to modify the terms
-                break;
-
-            case 2:
-                return 2;
-                break;
-
-            case 3:
-                return 3;
-                break;
-            }
+            return (priorityTask == 1 ? 1 : (priorityTask == 2 ? 2 : 3)); // para mas maikli hsskjas
         }
 
     } while (task_loop);
 }
+
 
 bool verify_date(string wholedate){
     int month, date, year;

@@ -122,9 +122,9 @@ void insert_todo(int n, string name, string date, string time, int prio, bool st
 }
 
 void fix_td_width(){
-    todo* temp = todohead;
+    struct todo* temp = todohead;
 
-    if (temp == nullptr) return;
+    if (temp == nullptr) cout << "welp";
     while (temp != nullptr){
         if (temp->name.length() + 4 > todo_width) todo_width = temp->name.length() + 4;
         if (temp->category.length() + 4 > categ_width) categ_width = temp->category.length() + 4;
@@ -179,7 +179,6 @@ void view_td(){
 
     if (temp == nullptr) {
         cout << "List is empty." << endl;
-        return;
     }
     
     cout << left << setw(id_width) << "ID"
@@ -249,7 +248,7 @@ string categoriesList()
             cout << "\nTask Categories:\n";
             show_categories(categories);
             cout << "\n\n   Enter Task Category: ";
-            cin >> userTaskCateg;
+            getline(cin >> ws, userTaskCateg);
             {
                 queue<string> tempQueue = categories; // Create a temporary queue for searching
                 bool categoryFound = false;
@@ -419,7 +418,6 @@ void add_td(){
               << todohead->status << ","
               << todohead->category << endl;
     user_file.close();
-    cout << "what";
 }
 
 void complete_td(){
@@ -598,8 +596,8 @@ void exit(){
 }
 
 void options(){
-    system("cls");
     char choice;
+    system("cls");
     view_td();
 
     cout << "What do you want to-do?" << endl

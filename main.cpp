@@ -13,7 +13,7 @@ string current_user, current_pass;
 int current_user_id;
 
 // widths
-int id_width = 6, todo_width = 4, date_width = 9, time_width = 9, status_width = 12, prio_width = 12, categ_width = 12;
+int id_width = 6, todo_width = 8, date_width = 9, time_width = 9, status_width = 12, prio_width = 12, categ_width = 12;
 
 // nodes
 struct user{
@@ -55,7 +55,8 @@ void add_user(string user_input, string pass_input){
     current_user_id = userhead->id;
 
     ofstream user_file("database/users.txt", ios::app);
-    user_file << userhead->id << "," << user_input << "," << pass_input << endl;
+    if(user_file.is_open())
+        user_file << userhead->id << "," << user_input << "," << pass_input << endl;
     user_file.close();
 
 }
@@ -124,7 +125,7 @@ void insert_todo(int n, string name, string date, string time, int prio, bool st
 void fix_td_width(){
     struct todo* temp = todohead;
 
-    if (temp == nullptr) cout << "welp";
+    if (temp == nullptr) return;
     while (temp != nullptr){
         if (temp->name.length() + 4 > todo_width) todo_width = temp->name.length() + 4;
         if (temp->category.length() + 4 > categ_width) categ_width = temp->category.length() + 4;
@@ -166,7 +167,7 @@ void initialize_td(){
             insert_todo(id,name,date,time,prio,status,categ);
         }
     }
-    else ofstream user_file("database/users.txt");
+    else ofstream user_file(filename);
 
     user_file.close();
 
@@ -410,13 +411,14 @@ void add_td(){
     todohead = new_node;
 
     ofstream user_file(filename, ios::app);
-    user_file << todohead->id << ","
-              << todohead->name << ","
-              << todohead->date_dl << ","
-              << todohead->time_dl << ","
-              << todohead->priority << ","
-              << todohead->status << ","
-              << todohead->category << endl;
+    if (user_file.is_open())
+        user_file << todohead->id << ","
+                  << todohead->name << ","
+                  << todohead->date_dl << ","
+                  << todohead->time_dl << ","
+                  << todohead->priority << ","
+                  << todohead->status << ","
+                  << todohead->category << endl;
     user_file.close();
 }
 

@@ -211,7 +211,6 @@ void complete_todo(struct todo* head, int id){
     while(head!=NULL){
         if (head->id == id){
             head->status = true;
-            cout << "if";
         }
         head = head->next;
     }
@@ -407,7 +406,7 @@ void add_td(){
     cout << "What are you planning on doing? ";
     getline(cin >> ws,name);
 
-    auto [date, time] = get_deadline();
+    auto [input_date, input_time] = get_deadline();
     int taskPriority = priorityLevel();
     string taskCategory = categoriesList();
 
@@ -417,8 +416,8 @@ void add_td(){
     if(todohead==NULL) new_node->id = 0;
     else new_node->id = todohead->id + 1;
     new_node->name = name;
-    new_node->date_dl = date;
-    new_node->time_dl = time;
+    new_node->date_dl = input_date;
+    new_node->time_dl = input_time;
     new_node->priority = taskPriority;
     new_node->status = false;
     new_node->category = taskCategory;
@@ -433,6 +432,7 @@ void add_td(){
               << todohead->status << ","
               << todohead->category << endl;
     user_file.close();
+    cout << "what";
 }
 
 void complete_td(){
@@ -450,11 +450,90 @@ void complete_td(){
 
 void edit_td(){
     system("cls");
+    view_td();
+    
+    bool loop = true;
+    int id, property, new_prio;
+    string new_name, new_date, new_time, new_categ;
+    struct todo* temp = new todo;
+    temp = todohead;
+    do{
+        cout << "Which item do you want to edit? ";
+        cin >> id;
+        cout << "What do you want to edit? " << endl
+            << "[1] Name" << endl
+            << "[2] Date of deadline" << endl
+            << "[3] Time of deadline" << endl
+            << "[4] Priority" << endl
+            << "[5] Category" << endl;
+        cin >> property;
+        switch (property){
+            case 1:
+                cout << "What should be the new name? ";
+                getline(cin >> ws, new_name);
+                while(temp!=nullptr){
+                    if (temp->id == id)
+                        temp->name = new_name;
 
+                    temp = temp->next;
+                }
+                loop = false;
+                break;
+            case 2:
+                cout << "What should be the new date of deadline? ";
+                cin >> new_date;
+                if (verify_date(new_date))
+                    while(temp!=nullptr){
+                        if (temp->id == id)
+                            temp->date_dl = new_date;
+
+                        temp = temp->next;
+                    }
+                loop = false;
+                break;
+            case 3:
+                cout << "What should be the new time of deadline? ";
+                cin >> new_time;
+                if (verify_time(new_time))
+                    while(temp!=nullptr){
+                        if (temp->id == id)
+                            temp->time_dl = new_time;
+
+                        temp = temp->next;
+                    }
+                loop = false;
+                break;
+            case 4:
+                new_prio = priorityLevel();
+                while(temp!=nullptr){
+                    if (temp->id == id)
+                        temp->priority = new_prio;
+                        
+                    temp = temp->next;
+                }
+                loop = false;
+                break;
+            case 5:
+                new_categ = categoriesList();
+                while(temp!=nullptr){
+                    if (temp->id == id)
+                        temp->category = new_categ;
+                    temp = temp->next;
+                }
+                loop = false;
+                break;
+            default:
+                cout << "Not in the choices. ";
+        }
+    } while (loop);
 }
 
 void delete_td(){
     system("cls");
+
+}
+
+void exit(){
 
 }
 
@@ -476,28 +555,24 @@ void options(){
     switch (choice){
         case '1':
             add_td();
-            options();
             break;
         case '2':
             complete_td();
-            options();
             break;
         case '3':
             edit_td();
-            options();
             break;
         case '4':
             delete_td();
-            options();
             break;
         case '5':
-            // exit();
-            break;
+            exit();
+            return;
         default:
             options();
             break;
     }
-    
+    options();
 }
 
 void regis(){ // register is a keyword ?
@@ -609,7 +684,7 @@ int main(){
         // [ ] - by priority
         // [ ] - by category
             // [X] add to-do
-            // [ ] complete to-do
+            // [X] complete to-do
             // [ ] edit to-do
             // [ ] delete to-do
 }

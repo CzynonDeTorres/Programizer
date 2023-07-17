@@ -515,13 +515,86 @@ void edit_td(){
     } while (loop);
 }
 
-void delete_td(){
+void delete_td(struct todo* head){
     system("cls");
+    todo *curr = head, *previous = NULL;
+    int del_id;
 
+    view_td();
+
+    cout << "What do you want to delete? ";
+    cin >> del_id;
+
+    // If the list is empty, do nothing.
+    if (!head)
+        return;
+    // Determine if the first node is the one.
+    if (head->id == del_id)
+    {
+        curr = head->next;
+        delete head;
+        head = curr;
+    }
+    else
+    {
+        // Initialize nodePtr to head of list
+        curr = head;
+        // Skip all nodes whose value member is
+        // not equal to num.
+        while (curr != NULL && curr->id != del_id)
+        {
+                previous = curr;
+                curr = curr->next;
+        }
+        // Link the previous node to the node after
+        // nodePtr, then delete nodePtr.
+        previous->next = curr->next;
+        delete curr;
+    }
+    view_td();
+    view_td();
+    system("cls");
 }
 
 void exit(){
-
+    int i = 0;
+    struct todo* temp = todohead;
+    string filename = "database/lists/" + to_string(current_user_id) +".txt";
+    if (current_user_id == -1){
+        ofstream user_file(filename);
+        user_file << "";
+        user_file.close();
+    }
+    else
+        while (temp != NULL){
+            if (i==0){
+                ofstream user_file(filename);
+                user_file << i << ","
+                        << temp->name << ","
+                        << temp->date_dl << ","
+                        << temp->time_dl << ","
+                        << temp->priority << ","
+                        << temp->status << ","
+                        << temp->category << endl;
+                user_file.close();
+            }
+            else{
+                ofstream user_file(filename, ios::app);
+                user_file << i << ","
+                        << temp->name << ","
+                        << temp->date_dl << ","
+                        << temp->time_dl << ","
+                        << temp->priority << ","
+                        << temp->status << ","
+                        << temp->category << endl;
+                user_file.close();
+            }
+            temp = temp->next;
+            i++;
+        }
+    system("cls");
+    cout << "Thank you for using this program!";
+    return;
 }
 
 void options(){
@@ -542,24 +615,27 @@ void options(){
     switch (choice){
         case '1':
             add_td();
+            options();
             break;
         case '2':
             complete_td();
+            options();
             break;
         case '3':
             edit_td();
+            options();
             break;
         case '4':
-            delete_td();
+            delete_td(todohead);
+            options();
             break;
         case '5':
             exit();
-            return;
+            break;
         default:
             options();
             break;
     }
-    options();
 }
 
 void regis(){ // register is a keyword ?
@@ -656,8 +732,6 @@ void enter(){
             enter();
             break;
     }
-
-    options();
 }
 
 int main(){
@@ -666,12 +740,13 @@ int main(){
     // [X] register and login
     // [X] guest mode
     // [X] display
-        // [ ] - unsorted (default)
+        // [X] - unsorted (default)
         // [ ] - by date
         // [ ] - by priority
         // [ ] - by category
             // [X] add to-do
             // [X] complete to-do
-            // [ ] edit to-do
-            // [ ] delete to-do
+            // [X] edit to-do
+            // [X] delete to-do
+    return 0;
 }

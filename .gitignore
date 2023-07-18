@@ -2,3 +2,4 @@
 main.exe
 database/users.txt
 database/lists/
+*.exe

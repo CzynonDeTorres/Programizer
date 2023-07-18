@@ -1,5 +1,4 @@
 .vscode
 main.exe
-database/users.txt
-database/lists/
+*.txt
 *.exe

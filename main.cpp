@@ -188,50 +188,27 @@ void initialize_td(){
 
 }
 
-void sort_list_by_status(todo** head)
-{
-    todo* prev = (*head);
-    todo* curr = (*head)->next;
-  
-    while (curr != NULL)
-    {
-        if (curr->status < prev->status)
-        {
-            prev->next = curr->next;
-  
-            curr->next = (*head);
-            (*head) = curr;
-  
-            curr = prev;
-        }
-  
-        else
-            prev = curr;
-  
-        curr = curr->next;
-    }
-}
-
 void sort_list_by_prio(todo* head)
 {
-    todo* prev = head;
-    todo* curr = head->next;
+    todo* prev = (head);
+    todo* curr = (head)->next;
   
     while (curr != NULL)
     {
         if (curr->priority < prev->priority)
         {
             prev->next = curr->next;
-  
-            curr->next = head;
-            head = curr;
-  
+
+            curr->next = (head);
+            (head) = curr;
+
             curr = prev;
+            // swap(curr,prev);
         }
-  
+
         else
             prev = curr;
-  
+
         curr = curr->next;
     }
 }
@@ -254,8 +231,8 @@ void view_td(){
              << left << setw(prio_width) << "Priority"
              << left << setw(status_width) << "Status"
              << left << setw(categ_width) << "Category" << endl;
-        if (current_sort)
-            sort_list_by_prio(temp);
+        // if (current_sort)
+        //     sort_list_by_prio(todohead);
         //sort_list_by_status(&todohead);
     }
 

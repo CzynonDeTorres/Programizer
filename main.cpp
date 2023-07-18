@@ -10,17 +10,24 @@
 using namespace std;
 
 string current_user, current_pass;
+bool current_sort;
 int current_user_id;
 
 // widths
-int id_width = 6, todo_width = 8, date_width = 9, time_width = 9, status_width = 12, prio_width = 12, categ_width = 12;
+int id_width = 6,
+    todo_width = 8,
+    date_width = 9,
+    time_width = 9,
+    status_width = 12,
+    prio_width = 12,
+    categ_width = 12;
 
 // nodes
 struct user{
     int id;
     string name;
     string pass;
-    string line_detail;
+    bool sort;
     user* next;
 };
 
@@ -42,13 +49,14 @@ struct todo{
 user *userhead = NULL;
 todo *todohead = NULL;
 
-void add_user(string user_input, string pass_input){
+void add_user(string user_input, string pass_input, bool sorting){
     struct user *new_node = new user;
 
     if(userhead==NULL) new_node->id = 0;
     else new_node->id = userhead->id + 1;
     new_node->name = user_input;
     new_node->pass = pass_input;
+    new_node->sort = sorting;
     new_node->next = userhead;
     userhead = new_node;
 
@@ -56,16 +64,17 @@ void add_user(string user_input, string pass_input){
 
     ofstream user_file("database/users.txt", ios::app);
     if(user_file.is_open())
-        user_file << userhead->id << "," << user_input << "," << pass_input << endl;
+        user_file << userhead->id << "," << user_input << "," << pass_input << "," << sorting << endl;
     user_file.close();
 
 }
 
-void insert_user(int n, string user_input, string pass_input){
+void insert_user(int n, string user_input, string pass_input, bool sort){
     struct user *new_node = new user;
     new_node->id = n;
     new_node->name = user_input;
     new_node->pass = pass_input;
+    new_node->sort = sort;
     new_node->next = userhead;
     userhead = new_node;
 }
@@ -73,6 +82,7 @@ void insert_user(int n, string user_input, string pass_input){
 void open_user_list(){
     ifstream user_file;
     string line,deets,user,pass;
+    bool sort;
     int id;
     user_file.open("database/users.txt");
     if (user_file.is_open()){
@@ -86,9 +96,13 @@ void open_user_list(){
                     user=deets;
                 else if(i==2)
                     pass=deets;
+                else if(i==3){
+                    if (deets == "0") sort = false;
+                    if (deets == "1") sort = true;
+                }
                 i++;
             }
-            insert_user(id,user,pass);
+            insert_user(id,user,pass,sort);
         }
     }
     else ofstream user_file("database/users.txt");
@@ -102,6 +116,7 @@ bool search_user(struct user* head, string name){
         current_user_id = head->id;
         current_user = head->name;
         current_pass = head->pass;
+        current_sort = head->sort;
         return true;
     }
 
@@ -173,22 +188,62 @@ void initialize_td(){
 
 }
 
+void sort_list(todo** head)
+{
+    // Initialize previous and current 
+    // nodes
+    todo* prev = (*head);
+    todo* curr = (*head)->next;
+  
+    // Traverse list
+    while (curr != NULL)
+    {
+        // If curr is smaller than prev, 
+        // then it must be moved to head
+        if (curr->priority < prev->priority)
+        {
+            // Detach curr from linked list
+            prev->next = curr->next;
+  
+            // Move current node to beginning
+            curr->next = (*head);
+            (*head) = curr;
+  
+            // Update current
+            curr = prev;
+        }
+  
+        // Nothing to do if current 
+        // element is at right place
+        else
+            prev = curr;
+  
+        // Move current
+        curr = curr->next;
+    }
+}
+  
+
 void view_td(){
     fix_td_width();
+    
     todo* temp = new todo;
     temp = todohead;
 
     if (temp == nullptr) {
         cout << "List is empty." << endl;
     }
-    
-    cout << left << setw(id_width) << "ID"
-         << left << setw(todo_width) << "Name"
-         << left << setw(date_width) << "Deadline:"
-         << left << setw(time_width) << ""
-         << left << setw(prio_width) << "Priority"
-         << left << setw(status_width) << "Status"
-         << left << setw(categ_width) << "Category" << endl;
+    else{
+        cout << left << setw(id_width) << "ID"
+             << left << setw(todo_width) << "Name"
+             << left << setw(date_width) << "Deadline:"
+             << left << setw(time_width) << ""
+             << left << setw(prio_width) << "Priority"
+             << left << setw(status_width) << "Status"
+             << left << setw(categ_width) << "Category" << endl;
+        if (current_sort)
+            sort_list(&todohead);
+    }
 
     while (temp != nullptr) {
         string status;
@@ -526,10 +581,8 @@ void delete_td(struct todo* head){
     cout << "What do you want to delete? ";
     cin >> del_id;
 
-    // If the list is empty, do nothing.
     if (!head)
         return;
-    // Determine if the first node is the one.
     if (head->id == del_id)
     {
         curr = head->next;
@@ -538,17 +591,12 @@ void delete_td(struct todo* head){
     }
     else
     {
-        // Initialize nodePtr to head of list
         curr = head;
-        // Skip all nodes whose value member is
-        // not equal to num.
         while (curr != NULL && curr->id != del_id)
         {
                 previous = curr;
                 curr = curr->next;
         }
-        // Link the previous node to the node after
-        // nodePtr, then delete nodePtr.
         previous->next = curr->next;
         delete curr;
     }
@@ -639,10 +687,11 @@ void options(){
     }
 }
 
-void regis(){ // register is a keyword ?
+void regis(){ // register is a keyword apparently
     system("cls");
     bool loop = true;
     string username_input, password_input;
+    char sorting;
 
     do {
         cout << "Register for a new account." << endl << endl;
@@ -657,10 +706,40 @@ void regis(){ // register is a keyword ?
         else {
             cout << "Enter password: ";
             cin >> password_input;
-            add_user(username_input, password_input);
-            loop = false;
-            initialize_td();
-            options();
+            cout << "Would you want sorting by priority (Y/N)? ";
+            cin >> sorting;
+            switch (sorting){
+                case 'y':
+                    add_user(username_input, password_input, true);
+                    loop = false;
+                    initialize_td();
+                    options();
+                    break;
+                case 'Y':
+                    add_user(username_input, password_input, true);
+                    loop = false;
+                    initialize_td();
+                    options();
+                    break;
+                case 'n':
+                    add_user(username_input, password_input, false);
+                    loop = false;
+                    initialize_td();
+                    options();
+                    break;
+                case 'N':
+                    add_user(username_input, password_input, false);
+                    loop = false;
+                    initialize_td();
+                    options();
+                    break;
+                default:
+                    cout << "That isn't part of the choices.";
+                    system("pause");
+                    system("cls");
+                    break;
+            }
+
         }
 
     } while(loop);

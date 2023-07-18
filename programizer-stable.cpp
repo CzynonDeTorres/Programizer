@@ -10,7 +10,6 @@
 using namespace std;
 
 string current_user, current_pass;
-bool current_sort;
 int current_user_id, line_count = 0;
 
 // widths
@@ -204,30 +203,6 @@ void initialize_td()
     user_file.close();
 }
 
-void sort_list_by_prio()
-{
-    todo* temp = new todo;
-    temp = todohead;
-    todo* prev = temp;
-    todo* curr = temp->next;
-
-    int i, key, j;
-    for (i = 1; i < sizeof(temp); i++) {
-        key = curr->priority;
-        j = i - 1;
- 
-        // Move elements of arr[0..i-1],
-        // that are greater than key,
-        // to one position ahead of their
-        // current position
-        while (j >= 0 && prev->priority > curr->priority) {
-            curr = prev;
-            j = j - 1;
-        }
-        curr = curr->next;
-    }
-}
-
 void view_td()
 {
     fix_td_width();
@@ -240,7 +215,6 @@ void view_td()
         cout << "List is empty." << endl;
     }
     else
-    {
         cout << left << setw(id_width) << "ID"
              << left << setw(todo_width) << "Name"
              << left << setw(date_width) << "Deadline:"
@@ -248,10 +222,6 @@ void view_td()
              << left << setw(prio_width) << "Priority"
              << left << setw(status_width) << "Status"
              << left << setw(categ_width) << "Category" << endl;
-        if (current_sort)
-            sort_list_by_prio();
-        // sort_list_by_status(&todohead);
-    }
 
     while (temp != nullptr)
     {
@@ -476,7 +446,6 @@ void add_td()
 {
     string name;
     system("cls");
-    // [name],[date],[time],[prio],[done or not done],[category]
     cout << "What are you planning on doing? ";
     getline(cin >> ws, name);
 
@@ -742,7 +711,6 @@ void regis()
     system("cls");
     bool loop = true;
     string username_input, password_input;
-    char sorting;
 
     do
     {

@@ -188,37 +188,50 @@ void initialize_td(){
 
 }
 
-void sort_list(todo** head)
+void sort_list_by_status(todo** head)
 {
-    // Initialize previous and current 
-    // nodes
     todo* prev = (*head);
     todo* curr = (*head)->next;
   
-    // Traverse list
     while (curr != NULL)
     {
-        // If curr is smaller than prev, 
-        // then it must be moved to head
-        if (curr->priority < prev->priority)
+        if (curr->status < prev->status)
         {
-            // Detach curr from linked list
             prev->next = curr->next;
   
-            // Move current node to beginning
             curr->next = (*head);
             (*head) = curr;
   
-            // Update current
             curr = prev;
         }
   
-        // Nothing to do if current 
-        // element is at right place
         else
             prev = curr;
   
-        // Move current
+        curr = curr->next;
+    }
+}
+
+void sort_list_by_prio(todo* head)
+{
+    todo* prev = head;
+    todo* curr = head->next;
+  
+    while (curr != NULL)
+    {
+        if (curr->priority < prev->priority)
+        {
+            prev->next = curr->next;
+  
+            curr->next = head;
+            head = curr;
+  
+            curr = prev;
+        }
+  
+        else
+            prev = curr;
+  
         curr = curr->next;
     }
 }
@@ -242,7 +255,8 @@ void view_td(){
              << left << setw(status_width) << "Status"
              << left << setw(categ_width) << "Category" << endl;
         if (current_sort)
-            sort_list(&todohead);
+            sort_list_by_prio(temp);
+        //sort_list_by_status(&todohead);
     }
 
     while (temp != nullptr) {
@@ -786,7 +800,7 @@ void enter(){
     system("cls");
     char option;
 
-    cout << "Welcome to XXX" << endl << endl;
+    cout << "Welcome to Programizer" << endl << endl;
     cout << "[0] Enter as a guest." << endl
          << "[1] Login as existing user." << endl
          << "[2] Register." << endl

@@ -408,6 +408,7 @@ void add_td(){
     new_node->priority = taskPriority;
     new_node->status = false;
     new_node->category = taskCategory;
+    new_node->next = todohead;
     todohead = new_node;
 
     ofstream user_file(filename, ios::app);

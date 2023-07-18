@@ -1,0 +1,1 @@
+Have a folder named "database" and a folder in it named "lists" since C++ can't make folders.

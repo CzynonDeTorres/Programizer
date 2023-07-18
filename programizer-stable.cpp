@@ -49,6 +49,48 @@ struct todo
 user *userhead = NULL;
 todo *todohead = NULL;
 
+// starter functions
+void enter();
+void regis();
+void login();
+void guestmode();
+void options();
+
+// user node functions
+void add_user(string user_input, string pass_input);
+void insert_user(int n, string user_input, string pass_input);
+void open_user_list();
+bool search_user(struct user *head, string name);
+
+// todo node functions
+void view_td();
+void initialize_td();
+void fix_td_width();
+void complete_todo(struct todo *head, int id);
+
+// functions for adding a todo
+void add_td();
+auto get_deadline();
+bool verify_date(string wholedate);
+bool verify_time(string time);
+string categoriesList();
+int priorityLevel();
+void show_categories(queue<string> q);
+void insert_todo(int n, string name, string date, string time, int prio, bool status, string categ);
+
+// other options under options
+void complete_td();
+void edit_td();
+void delete_td(struct todo *head);
+void exit();
+
+int main()
+{
+    open_user_list();
+    enter();
+    return 0;
+}
+
 void add_user(string user_input, string pass_input)
 {
     struct user *new_node = new user;
@@ -811,11 +853,4 @@ void enter()
         enter();
         break;
     }
-}
-
-int main()
-{
-    open_user_list();
-    enter();
-    return 0;
 }

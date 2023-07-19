@@ -10,7 +10,7 @@
 using namespace std;
 
 string current_user, current_pass;
-int current_user_id, line_count = 0;
+int current_user_id;
 
 // widths
 int id_width = 6,
@@ -55,6 +55,7 @@ void regis();
 void login();
 void guestmode();
 void options();
+void exit();
 
 // user node functions
 void add_user(string user_input, string pass_input);
@@ -68,7 +69,7 @@ void initialize_td();
 void fix_td_width();
 void complete_todo(struct todo *head, int id);
 
-// functions for adding a todo
+// functions for todo
 void add_td();
 auto get_deadline();
 bool verify_date(string wholedate);
@@ -77,12 +78,9 @@ string categoriesList();
 int priorityLevel();
 void show_categories(queue<string> q);
 void insert_todo(int n, string name, string date, string time, int prio, bool status, string categ);
-
-// other options under options
 void complete_td();
 void edit_td();
 void delete_td(struct todo *head);
-void exit();
 
 int main()
 {
@@ -236,7 +234,6 @@ void initialize_td()
                 i++;
             }
             insert_todo(id, name, date, time, prio, status, categ);
-            line_count++;
         }
     }
     else
@@ -772,6 +769,10 @@ void regis()
             cout << "Enter password: ";
             cin >> password_input;
             add_user(username_input, password_input);
+
+            loop = false;
+            initialize_td();
+            options();
         }
 
     } while (loop);

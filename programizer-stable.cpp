@@ -35,7 +35,7 @@ struct todo
     int id;
     string name;
     string date_dl;
-    string time_dl; // current available time method is a bit confusing so we just have to suffer
+    string time_dl; // current available time method is a bit confusing
     int priority;
     // 1 - most important
     // 2 - mid
@@ -384,7 +384,7 @@ int priorityLevel()
         else
         {
             task_loop = false;
-            return (priorityTask == 1 ? 1 : (priorityTask == 2 ? 2 : 3)); // para mas maikli hsskjas
+            return (priorityTask == 1 ? 1 : (priorityTask == 2 ? 2 : 3));
         }
 
     } while (task_loop);
@@ -746,7 +746,7 @@ void options()
 }
 
 void regis()
-{ // register is a keyword apparently
+{
     system("cls");
     bool loop = true;
     string username_input, password_input;

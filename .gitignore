@@ -1,6 +1,17 @@
+# vscode folder
 .vscode
-main.exe
+
+# specific file types that are in the folder
 *.txt
 *.exe
+*.pdf
+
+# private-ish cpp files
 programizer.cpp
 tempCodeRunnerFile.cpp
+
+# exceptions
+!sample-list.txt
+!sample-users.txt
+!programizer-stable.exe
+!TEAM-10_Programizer_Documentation.pdf
